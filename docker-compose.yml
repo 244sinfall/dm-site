@@ -1,9 +1,10 @@
 version: "3"
 services:
   php:
-    build: /php
+    build: ./php
     networks:
       - isolated-server
+    restart: always
     volumes:
       - "./src:/var/www/html"
   mysql:
@@ -14,9 +15,10 @@ services:
         - MYSQL_ROOT_PASSWORD=root
         - MYSQL_DATABASE=site
     volumes:
-      - "./mysql/dump:/docker-entrypoint-initdb.d"
+     - "./mysql/dump:/docker-entrypoint-initdb.d"
     networks:
       - isolated-server
+    restart: always
   serv:
     image: nginx
     ports:
@@ -26,9 +28,11 @@ services:
     volumes:
       - "./src:/var/www/html"
       - "./nginx/default.conf:/etc/nginx/conf.d/default.conf"
+      - "./nginx/.htpasswd:/etc/nginx/conf.d/.htpasswd"
     depends_on:
       - php
       - mysql
+    restart: always
 networks:
   isolated-server:
     driver: bridge
